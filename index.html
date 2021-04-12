@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Unity WebGL Player | Cisco 3D Virtual Event</title>
+  <link rel="shortcut icon" href="TemplateData/favicon.ico">
+  <link rel="stylesheet" href="TemplateData/style.css">
+  <script src="TemplateData/UnityProgress.js"></script>
+  <script src="Build/UnityLoader.js"></script>
+  <link rel="stylesheet" href="Build_Assets/css/bootstrap.min.css">
+  <script src="Build_Assets/js/jquery-3.3.1.min.js"></script>
+  <script src="Build_Assets/js/bootstrap.bundle.min.js"></script>
+  <script src="Build_Assets/js/webview.js"></script>
+  <script>
+    var unityInstance = UnityLoader.instantiate("unityContainer", "Build/unitywebgl.json", { onProgress: UnityProgress });
+  </script>
+</head>
+
+<body>
+  <div class="webgl-content">
+    <div id="unityContainer" style="width: 1664px; height: 936px"></div>    
+  </div>
+</body>
+
+</html>
