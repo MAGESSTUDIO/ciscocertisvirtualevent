@@ -11,7 +11,7 @@ function LoadModal() {
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>\
                 </div>\
                 <div class="modal-body">\
-                    <iframe src="http://e-cocoa-dashboard.azurewebsites.net" crossorigin="anonymous" width="100%" height="800px"></iframe>\
+                    <iframe src="https://e-cocoa-dashboard.azurewebsites.net" crossorigin="anonymous" width="100%" height="800px"></iframe>\
                 </div>\
             </div>\
         </div>\
