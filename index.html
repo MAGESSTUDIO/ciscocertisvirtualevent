@@ -14,13 +14,18 @@
   <script src="Build_Assets/js/bootstrap.bundle.min.js"></script>
   <script src="Build_Assets/js/webview.js"></script>
   <script>
-    var unityInstance = UnityLoader.instantiate("unityContainer", "Build/unitywebgl.json", { onProgress: UnityProgress });
+    var unityInstance = UnityLoader.instantiate("unityContainer", "Build/ciscocertisvirtualevent.json", { onProgress: UnityProgress });
   </script>
 </head>
 
 <body>
   <div class="webgl-content">
-    <div id="unityContainer" style="width: 1664px; height: 936px"></div>    
+    <div id="unityContainer" style="width: 1664px; height: 936px"></div>
+    <div class="footer">
+      <div class="webgl-logo"></div>
+      <div class="fullscreen" onclick="unityInstance.SetFullscreen(1)"></div>
+      <div class="title">Cisco 3D Virtual Event</div>
+    </div>
   </div>
 </body>
 
