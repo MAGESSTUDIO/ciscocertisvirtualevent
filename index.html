@@ -12,54 +12,122 @@ https://github.com/sno/unity-webgl-responsive
 <!DOCTYPE html>
 <html lang="en-us">
 
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Cisco 3D Virtual Event</title>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Cisco 3D Virtual Event</title>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="assets/css/reset.css">
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="StreamingAssets/Build_Assets/css/bootstrap.min.css">
-    <script src="StreamingAssets/Build_Assets/js/jquery-3.3.1.min.js"></script>  
-    <script src="StreamingAssets/Build_Assets/js/bootstrap.bundle.min.js"></script>  
-    <script src="StreamingAssets/Build_Assets/js/webview.js"></script>
-    <!-- unity resources -->
-    <script src="Build/UnityLoader.js"></script>
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="StreamingAssets/Build_Assets/css/bootstrap.min.css">
+  <script src="StreamingAssets/Build_Assets/js/jquery-3.3.1.min.js"></script>
+  <script src="StreamingAssets/Build_Assets/js/bootstrap.bundle.min.js"></script>
+  <script src="StreamingAssets/Build_Assets/js/webview.js"></script>
+  <script src="https://aka.ms/csspeech/jsbrowserpackageraw"></script>
+  <!-- unity resources -->
+  <script src="Build/UnityLoader.js"></script>
 
-    <script>
-      // instantiate webgl only if we're not on a touch device
+  <script>
+    // instantiate webgl only if we're not on a touch device
 
-      var isTouch = ('ontouchstart' in document.documentElement);
+    var isTouch = ('ontouchstart' in document.documentElement);
 
-      if ( !isTouch ) {
-        var unityInstance = UnityLoader.instantiate("unityContainer", "Build/ciscocertisvirtualevent.json");
+    if (!isTouch) {
+      var unityInstance = UnityLoader.instantiate("unityContainer", "Build/ciscogithubbuild.json");
+    }
+
+    var syncing = false;
+    var SpeechSDK;
+    var synthesizer;
+    var recognizer;
+
+    function DoTextToSpeech(subscriptionKey, serviceRegion, message) {
+      if (syncing)
+        return;
+
+      if (!!window.SpeechSDK) {
+        SpeechSDK = window.SpeechSDK;
       }
-    </script>
-  </head>
 
-  <body>
-    <div class="webgl-wrapper">
-      <div class="aspect" style="margin-top: calc(100% / 1664 * 936);"></div>
-      <div class="webgl-content">
-        <div id="unityContainer"></div>
-      </div>
-    </div>
-    <!-- check for F key press to toggle full screen -->
-    <script>
-      var isFullscreen = false;
+      var speechConfig = SpeechSDK.SpeechConfig.fromSubscription(subscriptionKey, serviceRegion);
 
-      document.addEventListener('keydown', function(event) {
-          if (event.which === 70) {
-              if (!isFullscreen) {
-                unityInstance.SetFullscreen(1);
-              } else {
-                unityInstance.SetFullscreen(0);
-              }
-              isFullscreen = !isFullscreen;
+      synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
+
+      let inputText = message;
+      syncing = true;
+      synthesizer.speakTextAsync(
+        inputText,
+        function (result) {
+
+          if (result.reason === SpeechSDK.ResultReason.SynthesizingAudioCompleted) {
+            window.console.log("Synthesis Complete");
+          } else if (result.reason === SpeechSDK.ResultReason.Canceled) {
+            window.console.log("Synthesis Fail");
           }
-      });
-    </script>
-  </body>
+          window.console.log(result);
+          synthesizer.close();
+          synthesizer = undefined;
+          syncing = false;
+        },
+        function (err) {
+          window.console.log(err);
+          synthesizer.close();
+          synthesizer = undefined;
+          syncing = false;
+        });
+    }
+
+    function DoSpeechToText(subscriptionKey, serviceRegion) {
+    
+      if (!!window.SpeechSDK) {
+        SpeechSDK = window.SpeechSDK;
+      }
+
+      var speechConfig = SpeechSDK.SpeechConfig.fromSubscription(subscriptionKey, serviceRegion);
+      speechConfig.speechRecognitionLanguage = "en-US";
+      var audioConfig = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
+      recognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
+      recognizer.recognizeOnceAsync(
+        function (result) {
+          window.console.log(result);
+          recognizer.close();
+          recognizer = undefined;
+          unityInstance.SendMessage("CERAController", "ReceiveTextFromSpeech", result.text);
+        },
+        function (err) {
+          window.console.log(err);
+          recognizer.close();
+          recognizer = undefined;
+        });
+    }
+  </script>
+</head>
+
+<body>
+  <div class="webgl-wrapper">
+    <div class="aspect" style="margin-top: calc(100% / 1664 * 936);"></div>
+    <div class="webgl-content">
+      <div id="unityContainer"></div>
+    </div>
+  </div>
+  <!-- check for F key press to toggle full screen -->
+  <script>
+    var isFullscreen = false;
+
+    document.addEventListener('keydown', function (event) {
+      if (event.which === 70) {
+        if (!isFullscreen) {
+          unityInstance.SetFullscreen(1);
+        } else {
+          unityInstance.SetFullscreen(0);
+        }
+        isFullscreen = !isFullscreen;
+      }
+    });
+  </script>
+  <script type="text/javascript" src="StreamingAssets/Build_Assets/js/unity-webview.js"></script>
+</body>
+
 </html>
